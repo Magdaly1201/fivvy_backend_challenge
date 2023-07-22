@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -40,4 +42,12 @@ public class DisclaimerServiceImp implements DisclaimerService{
                 throw new RuntimeException("Error while creating the disclaimer", e);
             }
         }
+
+    @Override
+    public List<DisclaimerResponseDTO> findByFilter(String searchText) {
+        List<Disclaimer> filteredDisclaimers = disclaimerRepository.findAllByText(searchText);
+        return filteredDisclaimers.stream()
+                .map(disclaimerEntity -> modelMapper.map(disclaimerEntity, DisclaimerResponseDTO.class))
+                .collect(Collectors.toList());
+    }
 }

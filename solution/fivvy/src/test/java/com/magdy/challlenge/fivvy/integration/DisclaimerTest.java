@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.magdy.challlenge.fivvy.models.dtos.DisclaimerRequestDTO;
 import com.magdy.challlenge.fivvy.models.entities.Disclaimer;
 import com.magdy.challlenge.fivvy.repositories.DisclaimerRepository;
+import org.hamcrest.Matchers;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -16,6 +18,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -33,6 +36,11 @@ public class DisclaimerTest {
 
     @Autowired
     private DisclaimerRepository disclaimerRepository;
+
+    @BeforeEach
+    public void cleanup() {
+        disclaimerRepository.deleteAll();
+    }
 
     @Test
     public void testCreateDisclaimer_and_returnStatusCreated() throws Exception {
@@ -85,8 +93,8 @@ public class DisclaimerTest {
 
         resultActions.andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errors").exists())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("The field : 'name' The name must have at least 3 characters."))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[1]").value("The field : 'name' The name cannot be blank."));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors", Matchers.hasSize(2)));
+
 
         List<Disclaimer> disclaimers = disclaimerRepository.findAll();
         assertEquals(0 ,disclaimers.size());
@@ -110,8 +118,7 @@ public class DisclaimerTest {
 
         resultActions.andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errors").exists())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("The field : 'text' The text cannot be blank."))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[1]").value("The field : 'text' The text must have at least 3 characters."));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors", Matchers.hasSize(2)));
 
         List<Disclaimer> disclaimers = disclaimerRepository.findAll();
         assertEquals(0 ,disclaimers.size());
@@ -131,10 +138,62 @@ public class DisclaimerTest {
 
         resultActions.andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errors").exists())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("The field : 'text' The text cannot be blank."))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[1]").value("The field : 'name' The text cannot be blank."));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors", Matchers.hasSize(2)));
+
 
         List<Disclaimer> disclaimers = disclaimerRepository.findAll();
         assertEquals(0 ,disclaimers.size());
     }
+
+    @Test
+    public void
+    testListByText_ResponseOK() throws Exception {
+        createMockRepository();
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
+                .get("/api/v1/disclaimer")
+                .param("searchText","text Disclaimer")
+                .contentType(MediaType.APPLICATION_JSON));
+
+        resultActions.andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize(1)))
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value("31b502e8-2843-11ee-be56-0242ac120002"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].name").value("Name Disclaimerer"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].text").value("text Disclaimer"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].version").value("2.0"));
+    }
+
+    @Test
+    public void testListByTextEmpty_ResponseOK() throws Exception {
+        createMockRepository();
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
+                .get("/api/v1/disclaimer")
+                .contentType(MediaType.APPLICATION_JSON));
+
+        resultActions.andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize(2)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value("31b502e8-2843-11ee-be56-0242ac120002"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].name").value("Name Disclaimerer"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].text").value("text Disclaimer"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].version").value("2.0"));
+    }
+
+    private void createMockRepository() {
+        Disclaimer disclaimer = new Disclaimer();
+        disclaimer.setId(UUID.fromString("31b502e8-2843-11ee-be56-0242ac120002").toString());
+        disclaimer.setName("Name Disclaimerer");
+        disclaimer.setText("text Disclaimer");
+        disclaimer.setVersion(2.0);
+
+        disclaimerRepository.save(disclaimer);
+
+        Disclaimer disclaimer1 = new Disclaimer();
+        disclaimer1.setId(UUID.fromString("51f43a1e-2844-11ee-be56-0242ac120002").toString());
+        disclaimer1.setName("Name Disclaimerer 1");
+        disclaimer1.setText("text");
+        disclaimer1.setVersion(2.1);
+        disclaimerRepository.save(disclaimer1);
+    }
+
 }

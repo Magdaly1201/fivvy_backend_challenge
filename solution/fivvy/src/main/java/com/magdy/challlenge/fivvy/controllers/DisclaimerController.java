@@ -24,4 +24,9 @@ public class DisclaimerController {
         log.info("Received request to create a new disclaimer: {}", disclaimerDTO);
         return new ResponseEntity<>(disclaimerService.create(disclaimerDTO), HttpStatus.CREATED);
     }
+    @GetMapping
+    public ResponseEntity<?> getDisclaimerByFilter(@RequestParam(required = false, defaultValue = "") String searchText) {
+        log.info("Received request to get list by filter");
+        return new ResponseEntity<>(disclaimerService.findByFilter(searchText), HttpStatus.OK);
+    }
 }
