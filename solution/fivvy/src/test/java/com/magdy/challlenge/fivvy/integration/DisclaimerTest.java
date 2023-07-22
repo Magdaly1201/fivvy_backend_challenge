@@ -150,7 +150,7 @@ public class DisclaimerTest {
     testListByText_ResponseOK() throws Exception {
         createMockRepository();
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
-                .get("/api/v1/disclaimer")
+                .get("/api/v1/disclaimer/search")
                 .param("searchText","text Disclaimer")
                 .contentType(MediaType.APPLICATION_JSON));
 
@@ -167,7 +167,7 @@ public class DisclaimerTest {
     public void testListByTextEmpty_ResponseOK() throws Exception {
         createMockRepository();
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
-                .get("/api/v1/disclaimer")
+                .get("/api/v1/disclaimer/search")
                 .contentType(MediaType.APPLICATION_JSON));
 
         resultActions.andExpect(MockMvcResultMatchers.status().isOk())
@@ -178,6 +178,38 @@ public class DisclaimerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].text").value("text Disclaimer"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].version").value("2.0"));
     }
+
+    @Test
+    public void testGetBy_ResponseOK() throws Exception {
+        createMockRepository();
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
+                .get("/api/v1/disclaimer")
+                        .param("id","31b502e8-2843-11ee-be56-0242ac120002")
+                .contentType(MediaType.APPLICATION_JSON));
+
+        resultActions.andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value("31b502e8-2843-11ee-be56-0242ac120002"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Name Disclaimerer"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.text").value("text Disclaimer"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.version").value("2.0"));
+    }
+
+    @Test
+    public void testGetBy_ResponseNotFound() throws Exception {
+        createMockRepository();
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
+                .get("/api/v1/disclaimer")
+                .param("id","31b502e8-2843-11ee-be56-0242ac120001")
+                .contentType(MediaType.APPLICATION_JSON));
+
+        resultActions.andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors").value("Disclaimer not found"));
+
+    }
+
+
 
     private void createMockRepository() {
         Disclaimer disclaimer = new Disclaimer();
