@@ -29,4 +29,16 @@ public class RestExceptionAdvice {
         }
         return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(DisclaimerNotFoundException.class)
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> disclaimerNotFoundExceptionHandle(DisclaimerNotFoundException ex) {
+        Map<String, Object> response = new HashMap<>();
+        String className = ex.getStackTrace()[0].getClassName();
+        int line = ex.getStackTrace()[0].getLineNumber();
+        log.error("Exception: "+ex.getSystemMessage()+ " - Class: "+className +" - line: "+ line);
+        response.put("errors", ex.getSystemMessage());
+        return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
+
+    }
 }

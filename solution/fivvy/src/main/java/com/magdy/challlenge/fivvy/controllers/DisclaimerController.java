@@ -1,5 +1,6 @@
 package com.magdy.challlenge.fivvy.controllers;
 
+import com.magdy.challlenge.fivvy.exceptions.DisclaimerNotFoundException;
 import com.magdy.challlenge.fivvy.models.dtos.DisclaimerRequestDTO;
 import com.magdy.challlenge.fivvy.services.DisclaimerService;
 import lombok.extern.slf4j.Slf4j;
@@ -24,9 +25,15 @@ public class DisclaimerController {
         log.info("Received request to create a new disclaimer: {}", disclaimerDTO);
         return new ResponseEntity<>(disclaimerService.create(disclaimerDTO), HttpStatus.CREATED);
     }
-    @GetMapping
+    @GetMapping("/search")
     public ResponseEntity<?> getDisclaimerByFilter(@RequestParam(required = false, defaultValue = "") String searchText) {
         log.info("Received request to get list by filter");
         return new ResponseEntity<>(disclaimerService.findByFilter(searchText), HttpStatus.OK);
+    }
+
+    @GetMapping
+    public ResponseEntity<?> getById(@RequestParam(required = true) String id) throws DisclaimerNotFoundException {
+        log.info("Received request to get list by filter");
+        return new ResponseEntity<>(disclaimerService.getById(id), HttpStatus.OK);
     }
 }

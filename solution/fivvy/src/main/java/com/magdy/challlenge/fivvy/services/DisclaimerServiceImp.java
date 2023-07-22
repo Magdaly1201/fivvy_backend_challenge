@@ -1,5 +1,6 @@
 package com.magdy.challlenge.fivvy.services;
 
+import com.magdy.challlenge.fivvy.exceptions.DisclaimerNotFoundException;
 import com.magdy.challlenge.fivvy.models.dtos.DisclaimerResponseDTO;
 import com.magdy.challlenge.fivvy.models.entities.Disclaimer;
 import com.magdy.challlenge.fivvy.models.dtos.DisclaimerRequestDTO;
@@ -49,5 +50,11 @@ public class DisclaimerServiceImp implements DisclaimerService{
         return filteredDisclaimers.stream()
                 .map(disclaimerEntity -> modelMapper.map(disclaimerEntity, DisclaimerResponseDTO.class))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public DisclaimerResponseDTO getById(String id) throws DisclaimerNotFoundException {
+        Disclaimer disclaimer = disclaimerRepository.findById(id).orElseThrow(DisclaimerNotFoundException::new);
+        return  modelMapper.map(disclaimer, DisclaimerResponseDTO.class);
     }
 }
