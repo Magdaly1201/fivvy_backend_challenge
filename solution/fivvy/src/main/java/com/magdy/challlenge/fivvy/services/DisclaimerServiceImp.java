@@ -57,4 +57,9 @@ public class DisclaimerServiceImp implements DisclaimerService{
         Disclaimer disclaimer = disclaimerRepository.findById(id).orElseThrow(DisclaimerNotFoundException::new);
         return  modelMapper.map(disclaimer, DisclaimerResponseDTO.class);
     }
+
+    @Override
+    public void deleteById(String id) {
+        disclaimerRepository.deleteById(id);
+    }
 }
