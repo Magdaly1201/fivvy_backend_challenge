@@ -10,4 +10,5 @@ public interface DisclaimerService {
     List<DisclaimerResponseDTO> findByFilter(String searchText);
     DisclaimerResponseDTO getById(String id) throws DisclaimerNotFoundException;
     void deleteById(String id);
+    DisclaimerResponseDTO update(String id,  DisclaimerRequestDTO disclaimerDTO) throws DisclaimerNotFoundException;
 }

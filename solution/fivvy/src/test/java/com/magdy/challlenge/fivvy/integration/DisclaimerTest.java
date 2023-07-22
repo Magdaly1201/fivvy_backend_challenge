@@ -17,6 +17,8 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -224,11 +226,68 @@ public class DisclaimerTest {
        assertTrue(disclaimer.isEmpty());
     }
 
+    @Test
+    public void testUpdateDisclaimer_and_returnStatusCreated() throws Exception {
+        createMockRepository();
+        String id = "31b502e8-2843-11ee-be56-0242ac120002";
+
+        DisclaimerRequestDTO disclaimer = new DisclaimerRequestDTO();
+        disclaimer.setName("Name Disclaimer");
+        disclaimer.setText("text Disclaimer");
+        disclaimer.setVersion(2);
+
+        String jsonDisclaimer = objectMapper.writeValueAsString(disclaimer);
+
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
+                .post("/api/v1/disclaimer/{id}",id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonDisclaimer));
+
+        resultActions.andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(disclaimer.getName()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.text").value(disclaimer.getText()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.version").value(disclaimer.getVersion()));
+
+        Optional<Disclaimer> disclaimerFound = disclaimerRepository.findById(id);
+        assertFalse(disclaimerFound.isEmpty());
+        assertEquals(disclaimer.getName(), disclaimerFound.get().getName());
+        assertEquals(disclaimer.getText(), disclaimerFound.get().getText());
+        assertEquals(disclaimer.getVersion(), disclaimerFound.get().getVersion());
+        assertNotNull(disclaimerFound.get().getCreateAt());
+        assertNotNull(disclaimerFound.get().getUpdateAt());
+    }
+
+    @Test
+    public void testUpdateDisclaimer_and_returnDisclaimerNotFound() throws Exception {
+        String id = "31b502e8-2843-11ee-be56-0242ac120002";
+
+        DisclaimerRequestDTO disclaimer = new DisclaimerRequestDTO();
+        disclaimer.setName("Name Disclaimer");
+        disclaimer.setText("text Disclaimer");
+        disclaimer.setVersion(2);
+
+        String jsonDisclaimer = objectMapper.writeValueAsString(disclaimer);
+
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
+                .post("/api/v1/disclaimer/{id}",id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonDisclaimer));
+
+        resultActions.andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors").value("Disclaimer not found"));
+
+    }
+
     private void createMockRepository() {
         Disclaimer disclaimer = new Disclaimer();
         disclaimer.setId(UUID.fromString("31b502e8-2843-11ee-be56-0242ac120002").toString());
         disclaimer.setName("Name Disclaimerer");
         disclaimer.setText("text Disclaimer");
+        disclaimer.setUpdateAt(LocalDateTime.now(ZoneId.of("UTC")).minusHours(1));
+        disclaimer.setCreateAt(LocalDateTime.now(ZoneId.of("UTC")).minusHours(1));
         disclaimer.setVersion(2.0);
 
         disclaimerRepository.save(disclaimer);
@@ -238,6 +297,8 @@ public class DisclaimerTest {
         disclaimer1.setName("Name Disclaimerer 1");
         disclaimer1.setText("text");
         disclaimer1.setVersion(2.1);
+        disclaimer.setUpdateAt(LocalDateTime.now(ZoneId.of("UTC")).minusHours(1));
+        disclaimer.setCreateAt(LocalDateTime.now(ZoneId.of("UTC")).minusHours(1));
         disclaimerRepository.save(disclaimer1);
     }
 
