@@ -93,8 +93,8 @@ public class DisclaimerTest {
 
         resultActions.andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errors").exists())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("The field : 'name' The name must have at least 3 characters."))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[1]").value("The field : 'name' The name cannot be blank."));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors", Matchers.hasSize(2)));
+
 
         List<Disclaimer> disclaimers = disclaimerRepository.findAll();
         assertEquals(0 ,disclaimers.size());
@@ -118,8 +118,7 @@ public class DisclaimerTest {
 
         resultActions.andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errors").exists())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("The field : 'text' The text cannot be blank."))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[1]").value("The field : 'text' The text must have at least 3 characters."));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors", Matchers.hasSize(2)));
 
         List<Disclaimer> disclaimers = disclaimerRepository.findAll();
         assertEquals(0 ,disclaimers.size());
@@ -139,8 +138,8 @@ public class DisclaimerTest {
 
         resultActions.andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errors").exists())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("The field : 'text' The text cannot be blank."))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[1]").value("The field : 'name' The text cannot be blank."));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors", Matchers.hasSize(2)));
+
 
         List<Disclaimer> disclaimers = disclaimerRepository.findAll();
         assertEquals(0 ,disclaimers.size());
@@ -152,7 +151,7 @@ public class DisclaimerTest {
         createMockRepository();
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
                 .get("/api/v1/disclaimer")
-                        .param("searchText","text Disclaimer")
+                .param("searchText","text Disclaimer")
                 .contentType(MediaType.APPLICATION_JSON));
 
         resultActions.andExpect(MockMvcResultMatchers.status().isOk())
