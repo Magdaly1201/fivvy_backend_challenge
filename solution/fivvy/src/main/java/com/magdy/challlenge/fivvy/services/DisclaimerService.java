@@ -1,6 +1,8 @@
 package com.magdy.challlenge.fivvy.services;
 
 import com.magdy.challlenge.fivvy.exceptions.DisclaimerNotFoundException;
+import com.magdy.challlenge.fivvy.models.dtos.AcceptanceRequestDTO;
+import com.magdy.challlenge.fivvy.models.dtos.AcceptanceResponseDTO;
 import com.magdy.challlenge.fivvy.models.dtos.DisclaimerRequestDTO;
 import com.magdy.challlenge.fivvy.models.dtos.DisclaimerResponseDTO;
 import java.util.List;
@@ -11,4 +13,5 @@ public interface DisclaimerService {
     DisclaimerResponseDTO getById(String id) throws DisclaimerNotFoundException;
     void deleteById(String id);
     DisclaimerResponseDTO update(String id,  DisclaimerRequestDTO disclaimerDTO) throws DisclaimerNotFoundException;
+    AcceptanceResponseDTO addAcceptanceById(String disclaimerId, AcceptanceRequestDTO acceptanceRequestDTO) throws DisclaimerNotFoundException;
 }

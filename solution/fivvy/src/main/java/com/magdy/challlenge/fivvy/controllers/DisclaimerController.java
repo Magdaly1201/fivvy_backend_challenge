@@ -1,6 +1,7 @@
 package com.magdy.challlenge.fivvy.controllers;
 
 import com.magdy.challlenge.fivvy.exceptions.DisclaimerNotFoundException;
+import com.magdy.challlenge.fivvy.models.dtos.AcceptanceRequestDTO;
 import com.magdy.challlenge.fivvy.models.dtos.DisclaimerRequestDTO;
 import com.magdy.challlenge.fivvy.services.DisclaimerService;
 import lombok.extern.slf4j.Slf4j;
@@ -48,5 +49,11 @@ public class DisclaimerController {
     public ResponseEntity<?> update(@PathVariable String id, @Valid @RequestBody DisclaimerRequestDTO disclaimerDTO) throws DisclaimerNotFoundException {
         log.info("Received request to get update by id");
         return new ResponseEntity<>(disclaimerService.update(id, disclaimerDTO), HttpStatus.OK);
+    }
+
+    @PostMapping("/{disclaimerId}/acceptance")
+    public ResponseEntity<?> addAcceptanceByDisclaimerId(@PathVariable String disclaimerId, @Valid @RequestBody AcceptanceRequestDTO acceptanceRequestDTO) throws DisclaimerNotFoundException {
+        log.info("Received request to add acceptance by disclaimer id {}",disclaimerId);
+        return new ResponseEntity<>( disclaimerService.addAcceptanceById(disclaimerId, acceptanceRequestDTO), HttpStatus.CREATED);
     }
 }
