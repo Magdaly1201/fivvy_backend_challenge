@@ -1,8 +1,11 @@
 package com.magdy.challlenge.fivvy.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.magdy.challlenge.fivvy.models.dtos.AcceptanceRequestDTO;
 import com.magdy.challlenge.fivvy.models.dtos.DisclaimerRequestDTO;
+import com.magdy.challlenge.fivvy.models.entities.Acceptance;
 import com.magdy.challlenge.fivvy.models.entities.Disclaimer;
+import com.magdy.challlenge.fivvy.repositories.AcceptanceRepository;
 import com.magdy.challlenge.fivvy.repositories.DisclaimerRepository;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,9 +42,13 @@ public class DisclaimerTest {
     @Autowired
     private DisclaimerRepository disclaimerRepository;
 
+    @Autowired
+    private AcceptanceRepository acceptanceRepository;
+
     @BeforeEach
     public void cleanup() {
         disclaimerRepository.deleteAll();
+        acceptanceRepository.deleteAll();
     }
 
     @Test
@@ -279,6 +286,63 @@ public class DisclaimerTest {
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errors").value("Disclaimer not found"));
 
+    }
+
+    @Test
+    public void testAddAcceptanceById_ResponseAccept() throws Exception {
+        createMockRepository();
+        AcceptanceRequestDTO acceptanceRequestDTO = new AcceptanceRequestDTO();
+        acceptanceRequestDTO.setUserId("b001a5b2-28dd-11ee-be56-0242ac120002");
+        String jsonAcceptance = objectMapper.writeValueAsString(acceptanceRequestDTO);
+
+        String disclaimerId = "31b502e8-2843-11ee-be56-0242ac120002";
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
+                .post("/api/v1/disclaimer/{disclaimerId}/acceptance", disclaimerId)
+                .content(jsonAcceptance)
+                .contentType(MediaType.APPLICATION_JSON));
+
+        resultActions.andExpect(MockMvcResultMatchers.status().isCreated());
+
+        List<Acceptance> acceptanceFound = acceptanceRepository.findAll();
+        assertFalse(acceptanceFound.isEmpty());
+        assertNotNull(acceptanceFound.get(0).getId());
+        assertEquals(acceptanceRequestDTO.getUserId(), acceptanceFound.get(0).getUserId());
+        assertEquals(disclaimerId, acceptanceFound.get(0).getDisclaimerId());
+    }
+
+    @Test
+    public void testAddAcceptanceById_ResponseNotFoundDisclaimerId() throws Exception {
+        createMockRepository();
+        AcceptanceRequestDTO acceptanceRequestDTO = new AcceptanceRequestDTO();
+        acceptanceRequestDTO.setUserId("b001a5b2-28dd-11ee-be56-0242ac120002");
+        String jsonAcceptance = objectMapper.writeValueAsString(acceptanceRequestDTO);
+
+        String disclaimerId = "31b502e8-2843-11ee-be56-0242ac120001";
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
+                .post("/api/v1/disclaimer/{disclaimerId}/acceptance", disclaimerId)
+                .content(jsonAcceptance)
+                .contentType(MediaType.APPLICATION_JSON));
+
+        resultActions.andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors").value("Disclaimer not found"));
+    }
+
+    @Test
+    public void testAddAcceptanceById_NotUserAndBadRequest() throws Exception {
+        createMockRepository();
+        AcceptanceRequestDTO acceptanceRequestDTO = new AcceptanceRequestDTO();
+        String jsonAcceptance = objectMapper.writeValueAsString(acceptanceRequestDTO);
+
+        String disclaimerId = "31b502e8-2843-11ee-be56-0242ac120001";
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
+                .post("/api/v1/disclaimer/{disclaimerId}/acceptance", disclaimerId)
+                .content(jsonAcceptance)
+                .contentType(MediaType.APPLICATION_JSON));
+
+        resultActions.andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors", Matchers.hasSize(1)));
     }
 
     private void createMockRepository() {
