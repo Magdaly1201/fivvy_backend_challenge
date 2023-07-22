@@ -62,4 +62,16 @@ public class DisclaimerServiceImp implements DisclaimerService{
     public void deleteById(String id) {
         disclaimerRepository.deleteById(id);
     }
+
+    @Override
+    public DisclaimerResponseDTO update(String id, DisclaimerRequestDTO disclaimerDTO) throws DisclaimerNotFoundException {
+        log.info("Updating disclaimer {}", id);
+        Disclaimer disclaimer = disclaimerRepository.findById(id).orElseThrow(DisclaimerNotFoundException::new);
+        //setter dto to disclaimer found
+        modelMapper.map(disclaimerDTO, disclaimer);
+        disclaimer.setUpdateAt(LocalDateTime.now(ZoneId.of("UTC")));
+        disclaimerRepository.save(disclaimer);
+        log.info("Updated disclaimer {}", disclaimer.getId());
+        return modelMapper.map(disclaimer, DisclaimerResponseDTO.class);
+    }
 }

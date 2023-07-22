@@ -43,4 +43,10 @@ public class DisclaimerController {
         log.info("Received request to delete disclaimer by id");
         disclaimerService.deleteById(id);
     }
+
+    @PostMapping("/{id}")
+    public ResponseEntity<?> update(@PathVariable String id, @Valid @RequestBody DisclaimerRequestDTO disclaimerDTO) throws DisclaimerNotFoundException {
+        log.info("Received request to get update by id");
+        return new ResponseEntity<>(disclaimerService.update(id, disclaimerDTO), HttpStatus.OK);
+    }
 }
