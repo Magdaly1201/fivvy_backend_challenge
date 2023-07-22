@@ -33,7 +33,14 @@ public class DisclaimerController {
 
     @GetMapping
     public ResponseEntity<?> getById(@RequestParam(required = true) String id) throws DisclaimerNotFoundException {
-        log.info("Received request to get list by filter");
+        log.info("Received request to get disclaimer by id");
         return new ResponseEntity<>(disclaimerService.getById(id), HttpStatus.OK);
+    }
+
+    @DeleteMapping
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void deleteById(@RequestParam(required = true) String id) {
+        log.info("Received request to delete disclaimer by id");
+        disclaimerService.deleteById(id);
     }
 }

@@ -18,10 +18,10 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -209,7 +209,20 @@ public class DisclaimerTest {
 
     }
 
+    @Test
+    public void testDeleteById_ResponseAccept() throws Exception {
+        createMockRepository();
+        String id = "31b502e8-2843-11ee-be56-0242ac120002";
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
+                .delete("/api/v1/disclaimer")
+                .param("id",id)
+                .contentType(MediaType.APPLICATION_JSON));
 
+        resultActions.andExpect(MockMvcResultMatchers.status().isAccepted());
+
+       Optional<Disclaimer> disclaimer = disclaimerRepository.findById(id);
+       assertTrue(disclaimer.isEmpty());
+    }
 
     private void createMockRepository() {
         Disclaimer disclaimer = new Disclaimer();
