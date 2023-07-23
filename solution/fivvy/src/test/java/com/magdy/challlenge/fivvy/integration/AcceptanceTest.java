@@ -68,7 +68,7 @@ public class AcceptanceTest {
         assertFalse(acceptanceFound.isEmpty());
         assertNotNull(acceptanceFound.get(0).getId());
         assertEquals(acceptanceRequestDTO.getUserId(), acceptanceFound.get(0).getUserId());
-        assertEquals(disclaimerId, acceptanceFound.get(0).getDisclaimerId());
+        assertEquals(disclaimerId, acceptanceFound.get(0).getDisclaimerId().getId());
     }
 
     @Test
@@ -163,21 +163,21 @@ public class AcceptanceTest {
 
         Acceptance acceptance1 = new Acceptance();
         acceptance1.setId(UUID.fromString("76c66d24-28eb-11ee-be56-0242ac120002").toString());
-        acceptance1.setDisclaimerId(disclaimer.getId());
+        acceptance1.setDisclaimerId(disclaimer);
         acceptance1.setUserId("b001a5b2-28dd-11ee-be56-0242ac120002");
         acceptance1.setCreateAt(LocalDateTime.now(ZoneId.of("UTC")).minusHours(1));
         acceptanceRepository.save(acceptance1);
 
         Acceptance acceptance2 = new Acceptance();
         acceptance2.setId(UUID.fromString("711dc372-28eb-11ee-be56-0242ac120002").toString());
-        acceptance2.setDisclaimerId(disclaimer1.getId());
+        acceptance2.setDisclaimerId(disclaimer1);
         acceptance2.setUserId("b001a5b2-28dd-11ee-be56-0242ac120002");
         acceptance2.setCreateAt(LocalDateTime.now(ZoneId.of("UTC")).minusHours(1));
         acceptanceRepository.save(acceptance2);
 
         Acceptance acceptance3 = new Acceptance();
         acceptance3.setId(UUID.fromString("9dc47e85-b2ac-4fcd-afc5-d551b94822f2").toString());
-        acceptance3.setDisclaimerId(disclaimer1.getId());
+        acceptance3.setDisclaimerId(disclaimer1);
         acceptance3.setUserId("b001a5b2-28dd-11ee-be56-0242ac120001");
         acceptance3.setCreateAt(LocalDateTime.now(ZoneId.of("UTC")).minusHours(1));
         acceptanceRepository.save(acceptance3);

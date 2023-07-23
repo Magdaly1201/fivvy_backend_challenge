@@ -76,4 +76,9 @@ public class DisclaimerServiceImp implements DisclaimerService {
         return modelMapper.map(disclaimer, DisclaimerResponseDTO.class);
     }
 
+    @Override
+    public Disclaimer getEntityById(String id) throws DisclaimerNotFoundException {
+        return disclaimerRepository.findById(id).orElseThrow(DisclaimerNotFoundException::new);
+    }
+
 }

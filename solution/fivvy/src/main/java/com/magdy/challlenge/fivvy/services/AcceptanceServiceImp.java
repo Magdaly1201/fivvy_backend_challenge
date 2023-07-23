@@ -28,11 +28,11 @@ public class AcceptanceServiceImp implements AcceptanceService {
 
     @Override
     public AcceptanceResponseDTO create(String disclaimerId, AcceptanceRequestDTO acceptanceRequestDTO) throws DisclaimerNotFoundException {
-        DisclaimerResponseDTO disclaimerResponseDTO = disclaimerService.getById(disclaimerId);
-        log.info("add acceptance to the disclaimer {}", disclaimerResponseDTO.getId());
+        Disclaimer disclaimer = disclaimerService.getEntityById(disclaimerId);
+        log.info("add acceptance to the disclaimer {}", disclaimer.getId());
 
         Acceptance acceptance = modelMapper.map(acceptanceRequestDTO, Acceptance.class);
-        acceptance.setDisclaimerId(disclaimerResponseDTO.getId());
+        acceptance.setDisclaimerId(disclaimer);
         acceptance.setCreateAt(LocalDateTime.now(ZoneId.of("UTC")));
 
         acceptance = acceptanceRepository.save(acceptance);
