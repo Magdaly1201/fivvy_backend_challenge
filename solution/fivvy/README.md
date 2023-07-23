@@ -34,7 +34,7 @@ and can be used to launch the following services:"
 This command launches a MongoDB instance and deploys the latest version of the Fivvy API, which has been previously 
 built and uploaded to the Docker repository with the latest master changes
 
-The API will be available at the following URL: http://127.0.0.1:8080
+The API will be available at the following URL: http://127.0.0.1:8080/swagger-ui/index.html
 
 
 If you prefer to run the project locally, you can start a MongoDB container using the following command and launch 
