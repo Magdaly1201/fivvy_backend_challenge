@@ -4,6 +4,7 @@ import com.magdy.challlenge.fivvy.exceptions.DisclaimerNotFoundException;
 import com.magdy.challlenge.fivvy.models.dtos.AcceptanceRequestDTO;
 import com.magdy.challlenge.fivvy.models.dtos.DisclaimerRequestDTO;
 import com.magdy.challlenge.fivvy.services.DisclaimerService;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,13 +15,12 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("api/v1/disclaimer")
 @Slf4j
+@AllArgsConstructor
+
 public class DisclaimerController {
 
     private final DisclaimerService disclaimerService;
 
-    public DisclaimerController(DisclaimerService disclaimerService) {
-        this.disclaimerService = disclaimerService;
-    }
     @PostMapping
     public ResponseEntity<?> createDisclaimer(@Valid @RequestBody DisclaimerRequestDTO disclaimerDTO) {
         log.info("Received request to create a new disclaimer: {}", disclaimerDTO);
@@ -51,9 +51,4 @@ public class DisclaimerController {
         return new ResponseEntity<>(disclaimerService.update(id, disclaimerDTO), HttpStatus.OK);
     }
 
-    @PostMapping("/{disclaimerId}/acceptance")
-    public ResponseEntity<?> addAcceptanceByDisclaimerId(@PathVariable String disclaimerId, @Valid @RequestBody AcceptanceRequestDTO acceptanceRequestDTO) throws DisclaimerNotFoundException {
-        log.info("Received request to add acceptance by disclaimer id {}",disclaimerId);
-        return new ResponseEntity<>( disclaimerService.addAcceptanceById(disclaimerId, acceptanceRequestDTO), HttpStatus.CREATED);
-    }
 }

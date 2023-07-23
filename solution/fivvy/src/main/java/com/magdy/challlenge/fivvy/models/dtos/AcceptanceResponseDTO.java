@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class AcceptanceResponseDTO {
-
+    private String id;
     private String userId;
     private String disclaimerId;
     private LocalDateTime createAt;
