@@ -119,8 +119,8 @@ public class AcceptanceTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize(2)))
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").exists())
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].userId").value(userId))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].disclaimerId").value(disclaimerId));
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].user_id").value(userId))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].disclaimer_id").value(disclaimerId));
     }
 
     @Test
