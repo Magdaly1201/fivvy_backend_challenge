@@ -27,7 +27,7 @@ and can be used to launch the following services:"
     - MongoDB
     - API Fivvy
 
-Para iniciar los servicios, ejecuta el siguiente comando:
+"To start the services, run the following command:"
 
     docker compose up
 
